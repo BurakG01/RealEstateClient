@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
-import { connect }  from 'react-redux'
+import { connect } from 'react-redux'
 import { loadProperties, filterProperties } from "../../redux/actions";
-import listingsData from '../../assets/data/listingsData.js'
 import RepositoryFactory from '../../Api/RepositoryFactory'
 class SearchBar extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
-      listings:[],
+      pageNumber:0,
+      filter: {},
+      listings: [],
       properties: [],
       search: '',
       city: 'All',
@@ -32,45 +33,58 @@ class SearchBar extends Component {
       isTownHouse: false,
       isLot: false,
     }
-   
+
   }
-  componentWillMount () {
+  componentWillMount() {
+
+    const params = new URLSearchParams(this.props.location.search)
+    this.setState({filter:{
+      city: params.get('city'), 
+      towns: [params.get('town')],
+      street: [params.get('street')]
+    }}) ;
+
+    this.getListings();
+
+  }
+
+  getListings(){
     const listingRepository = RepositoryFactory.get("listings");
-    listingRepository.get("get-top").then((res)=>{
+    listingRepository.getPost(this.state.filter).then((res) => {
 
-      res.data.forEach(listing => {
-
-
+      this.state.pageNumber=res.data.totalPage
+      res.data.listings.forEach(listing => {
         this.state.listings.push({
-          owners:listing.owners,
-          ownerSite:listing.listing.ownerSite,
-          homeType:listing.listing.advertStatus,
-          address:listing.listing.street,
-          price:listing.listing.price,
-          city:listing.listing.city,
-          state:listing.listing.town,
-          rooms:listing.listing.roomNumber,
+          owners: listing.owners,
+          ownerSite: listing.listing.ownerSite,
+          homeType: listing.listing.advertStatus,
+          address: listing.listing.street,
+          price: listing.listing.price,
+          city: listing.listing.city,
+          state: listing.listing.town,
+          rooms: listing.listing.roomNumber,
           isForSale: true,
           isForRent: true,
           wasSold: false,
           listingType: 'isForSale',
-          image:listing.listing.coverImage,
+          image: listing.listing.coverImage,
           extras: [
             'elevator',
             'gym'
           ],
         });
       });
-      console.log(this.state.listings);
+      
       this.props.loadProperties(this.state.listings)
-      this.setState({properties: this.props.properties})
-    }).catch((err)=>{
-      console.log("err",err);
+      console.log(this.props)
+      this.setState({ properties: this.props.properties })
+     
+    }).catch((err) => {
+      console.log("err", err);
     })
-   
   }
-  
-  menuItemClicked (divId) {
+
+  menuItemClicked(divId) {
     const listingsMenuPane = document.querySelector('.listings-menu-pane')
     const pricingPane = document.querySelector('.pricing-pane')
     const bedsPane = document.querySelector('.beds-pane')
@@ -111,7 +125,7 @@ class SearchBar extends Component {
       pricingPane.classList.remove('isActive')
       listingsMenuPane.classList.remove('isActive')
       bedsPane.classList.remove('isActive')
-      
+
     }
 
   }
@@ -120,16 +134,16 @@ class SearchBar extends Component {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
-   
-    console.log("event name: ",name);
-    console.log("event value: ",value);
-    console.log("listing type",listingType);
+
+    console.log("event name: ", name);
+    console.log("event value: ", value);
+    console.log("listing type", listingType);
 
     if (numOfBeds >= 0)
-      this.setState({bedrooms: numOfBeds})
+      this.setState({ bedrooms: numOfBeds })
 
-      if (this.state.homeType )
-      this.setState({bedrooms: numOfBeds})
+    if (this.state.homeType)
+      this.setState({ bedrooms: numOfBeds })
 
     this.setState({
       [name]: value,
@@ -140,9 +154,6 @@ class SearchBar extends Component {
       this.props.filterProperties(allProperties, filterCriteria)
     });
 
-
-    
-
   }
 
   priceChange(event, allProperties, listingType) {
@@ -152,14 +163,14 @@ class SearchBar extends Component {
 
     this.setState({
       [name]: value,
-    
+
     });
 
   }
 
 
-  render () {
-    const {allProperties} = this.props.properties
+  render() {
+    const { allProperties } = this.props.properties
     return (
       <div id='search-bar-container' className=''>
         <ul className='toolbar-left'>
@@ -196,13 +207,13 @@ class SearchBar extends Component {
                         <form>
                           <li id='fs-listings' className='listing-type'>
                             <div className='listing-category'>
-                              <input 
-                              id='fs-listings-input'  
-                              className='checkbox' 
-                              name='listingType' 
-                              type='radio' 
-                              
-                              onClick={(event) => this.handleInputChange(event, allProperties, 'isForSale')}/>
+                              <input
+                                id='fs-listings-input'
+                                className='checkbox'
+                                name='listingType'
+                                type='radio'
+
+                                onClick={(event) => this.handleInputChange(event, allProperties, 'isForSale')} />
                               <label htmlFor='fs-listings-input'>
                                 <span className='icon-for-sale'>&nbsp;</span><span className='listing-type-text'>For Sale </span>
                                 <span id='fs-listings-resultCountWrapper'>(44)</span>
@@ -211,13 +222,13 @@ class SearchBar extends Component {
                           </li>
                           <li id='fr-listings' className='listing-type'>
                             <div className='listing-category'>
-                              <input 
-                              id='fr-listings-input' 
-                              type='radio' 
-                              className='checkbox' 
-                              name='listingType' 
-                              
-                              onClick={(event) => this.handleInputChange(event, allProperties, 'isForRent')}
+                              <input
+                                id='fr-listings-input'
+                                type='radio'
+                                className='checkbox'
+                                name='listingType'
+
+                                onClick={(event) => this.handleInputChange(event, allProperties, 'isForRent')}
                               />
                               <label htmlFor='fr-listings-input'>
                                 <span className='icon-for-rent'>&nbsp;</span><span className='listing-type-text' >For Rent </span>
@@ -227,13 +238,13 @@ class SearchBar extends Component {
                           </li>
                           <li id='rs-listings' className='listing-type'>
                             <div className='listing-category'>
-                              <input 
-                              id='rs-listings-input' 
-                              className='checkbox' 
-                              name='listingType' 
-                              type='radio' 
-                              
-                              onClick={(event) => this.handleInputChange(event, allProperties, 'wasSold')}
+                              <input
+                                id='rs-listings-input'
+                                className='checkbox'
+                                name='listingType'
+                                type='radio'
+
+                                onClick={(event) => this.handleInputChange(event, allProperties, 'wasSold')}
                               />
                               <label htmlFor='rs-listings-input'>
                                 <span className='icon-recently-sold'>&nbsp;</span>
@@ -244,13 +255,13 @@ class SearchBar extends Component {
                           </li>
                           <li id='rs-listings' className='listing-type'>
                             <div className='listing-category'>
-                              <input 
-                              id='rs-listings-input' 
-                              className='checkbox' 
-                              name='listingType' 
-                              type='radio' 
-                              
-                              onClick={(event) => this.handleInputChange(event, allProperties, 'all')}
+                              <input
+                                id='rs-listings-input'
+                                className='checkbox'
+                                name='listingType'
+                                type='radio'
+
+                                onClick={(event) => this.handleInputChange(event, allProperties, 'all')}
                               />
                               <label htmlFor='rs-listings-input'>
                                 <span className='icon-recently-sold'>&nbsp;</span>
@@ -280,23 +291,23 @@ class SearchBar extends Component {
                       <div className='dualboxes' id=''>
                         <div className='box1' id=''>
                           <input className='text' maxLength='11' size='10' id='price-min' type='text'
-                            autoComplete='off' placeholder='Min' 
-                            name='min_price' 
+                            autoComplete='off' placeholder='Min'
+                            name='min_price'
                             onChange={(event) => this.priceChange(event)}
-                            onBlur={(event) => this.handleInputChange(event,allProperties, null)} 
+                            onBlur={(event) => this.handleInputChange(event, allProperties, null)}
                             value={this.state.min_price}
-                            
-                            />
+
+                          />
                         </div>
                         <div className='dash'>&nbsp;</div>
                         <div className='box2'>
                           <input className='text commaFormat' maxLength='11' size='11' id='price-max'
-                            type='text' autoComplete='off' placeholder='Max' 
-                            name='max_price' 
+                            type='text' autoComplete='off' placeholder='Max'
+                            name='max_price'
                             onChange={(event) => this.priceChange(event)}
-                            onBlur={(event) => this.handleInputChange(event,allProperties, null)} 
+                            onBlur={(event) => this.handleInputChange(event, allProperties, null)}
                             value={this.state.max_price}
-                            />
+                          />
                         </div>
                       </div>
                     </div>
@@ -320,16 +331,16 @@ class SearchBar extends Component {
                       <div id='price-max-options' className='price-options max-price-options custom-dropdown hide'
                         data-dropdown-id='price-max'>
                         <ul className='dropdown-options search-entry menu-linklist'>
-                          <li data-value='100,000'><a href="#/"  className='option' tabIndex='0'>$100,000</a></li>
-                          <li data-value='200,000'><a href="#/"  className='option' tabIndex='0'>$200,000</a></li>
-                          <li data-value='300,000'><a href="#/"  className='option' tabIndex='0'>$300,000</a></li>
-                          <li data-value='400,000'><a href="#/"  className='option' tabIndex='0'>$400,000</a></li>
-                          <li data-value='500,000'><a href="#/"  className='option' tabIndex='0'>$500,000</a></li>
-                          <li data-value='600,000'><a href="#/"  className='option' tabIndex='0'>$600,000</a></li>
+                          <li data-value='100,000'><a href="#/" className='option' tabIndex='0'>$100,000</a></li>
+                          <li data-value='200,000'><a href="#/" className='option' tabIndex='0'>$200,000</a></li>
+                          <li data-value='300,000'><a href="#/" className='option' tabIndex='0'>$300,000</a></li>
+                          <li data-value='400,000'><a href="#/" className='option' tabIndex='0'>$400,000</a></li>
+                          <li data-value='500,000'><a href="#/" className='option' tabIndex='0'>$500,000</a></li>
+                          <li data-value='600,000'><a href="#/" className='option' tabIndex='0'>$600,000</a></li>
                           <li data-value='700,000'><a href="#/" className='option' tabIndex='0'>$700,000</a></li>
-                          <li data-value='800,000'><a href="#/"  className='option' tabIndex='0'>$800,000</a></li>
-                          <li data-value='900,000'><a href="#/"  className='option' tabIndex='0'>$900,000</a></li>
-                          <li data-value=''><a href="#/"  className='option' tabIndex='0'>Any Price</a></li>
+                          <li data-value='800,000'><a href="#/" className='option' tabIndex='0'>$800,000</a></li>
+                          <li data-value='900,000'><a href="#/" className='option' tabIndex='0'>$900,000</a></li>
+                          <li data-value=''><a href="#/" className='option' tabIndex='0'>Any Price</a></li>
                         </ul>
                       </div>
                     </div>
@@ -339,7 +350,7 @@ class SearchBar extends Component {
 
                 <fieldset data-dropdown-id='beds-select' className='filter-menu beds-menu custom-dropdown' id=''>
                   <legend data-za-label='Beds'>
-                    <a href="#/"  id='' className='menu-label' tabIndex='0'>
+                    <a href="#/" id='' className='menu-label' tabIndex='0'>
                       <div id='beds-menu-label' onClick={() => this.menuItemClicked('beds-menu-label')}>
                         <span className='options-display' data-za-action='Beds'>0+</span> Beds
                         <i className='fas fa-sort-down' />
@@ -348,18 +359,18 @@ class SearchBar extends Component {
                     </a>
                   </legend>
 
-                  
+
 
                   <div className='filter-pane beds-pane' >
                     <div id='beds-entries' className='search-entry'>
                       <ul id='bed-options' className='bed-options dropdown-options menu-linklist'>
-                        <li onClick={ (event) => this.handleInputChange(event,allProperties, null, 0) } data-value='0,' id='' className='' ><a href="#/"  className='option' tabIndex='0'>0+</a></li>
-                        <li data-value='1,' id='' className='' onClick={ (event) => this.handleInputChange(event,allProperties, null, 1) } ><a href="#/"  className='option' tabIndex='0'>1+</a></li>
-                        <li data-value='2,' id='' className='' onClick={ (event) => this.handleInputChange(event,allProperties, null, 2) }><a href="#/"  className='option' tabIndex='0'>2+</a></li>
-                        <li data-value='3,' id='' className='' onClick={ (event) => this.handleInputChange(event,allProperties, null, 3) }><a href="#/"  className='option' tabIndex='0'>3+</a></li>
-                        <li data-value='4,' id='' className='' onClick={ (event) => this.handleInputChange(event,allProperties, null, 4) }><a href="#/"  className='option' tabIndex='0'>4+</a></li>
-                        <li data-value='5,' id='' className='' onClick={ (event) => this.handleInputChange(event,allProperties, null, 5) }><a href="#/"  className='option' tabIndex='0'>5+</a></li>
-                        <li data-value='6,' id='' className='' onClick={ (event) => this.handleInputChange(event,allProperties, null, 6) }><a href="#/"  className='option' tabIndex='0'>6+</a></li>
+                        <li onClick={(event) => this.handleInputChange(event, allProperties, null, 0)} data-value='0,' id='' className='' ><a href="#/" className='option' tabIndex='0'>0+</a></li>
+                        <li data-value='1,' id='' className='' onClick={(event) => this.handleInputChange(event, allProperties, null, 1)} ><a href="#/" className='option' tabIndex='0'>1+</a></li>
+                        <li data-value='2,' id='' className='' onClick={(event) => this.handleInputChange(event, allProperties, null, 2)}><a href="#/" className='option' tabIndex='0'>2+</a></li>
+                        <li data-value='3,' id='' className='' onClick={(event) => this.handleInputChange(event, allProperties, null, 3)}><a href="#/" className='option' tabIndex='0'>3+</a></li>
+                        <li data-value='4,' id='' className='' onClick={(event) => this.handleInputChange(event, allProperties, null, 4)}><a href="#/" className='option' tabIndex='0'>4+</a></li>
+                        <li data-value='5,' id='' className='' onClick={(event) => this.handleInputChange(event, allProperties, null, 5)}><a href="#/" className='option' tabIndex='0'>5+</a></li>
+                        <li data-value='6,' id='' className='' onClick={(event) => this.handleInputChange(event, allProperties, null, 6)}><a href="#/" className='option' tabIndex='0'>6+</a></li>
                       </ul>
                       <select id='beds-select' className='hide'>
                         <option value='0,'>0+</option>
@@ -376,7 +387,7 @@ class SearchBar extends Component {
                 </fieldset>
                 <fieldset className='filter-menu home-type-menu hometype-standalone custom-dropdown home-type-dropdown'>
                   <legend data-za-label='Home Type'>
-                    <a href="#/"  id='' className='menu-label' tabIndex='0'>
+                    <a href="#/" id='' className='menu-label' tabIndex='0'>
                       <div id='housetype-menu-label' onClick={() => this.menuItemClicked('housetype-menu-label')}> Home Type <span id='hometype-count' />
                         <i className='fas fa-sort-down' />
                         <i className='fas fa-sort-up' />
@@ -388,9 +399,9 @@ class SearchBar extends Component {
                     <ul className='combobox-options multicheck-dropdown-options hometype-options' id=''>
                       <li id='hometype-houses-filters' className='hometype-houses selected'>
                         <input name='houseType' tabIndex='-1' id='hometype-houses-filters-input'
-                          type='radio' className='hometype-houses-input checkbox' data-za-label='SFH' 
-                          onClick={ (event) => this.handleInputChange(event,allProperties, null, null, 'house') } 
-                          />
+                          type='radio' className='hometype-houses-input checkbox' data-za-label='SFH'
+                          onClick={(event) => this.handleInputChange(event, allProperties, null, null, 'house')}
+                        />
                         <label htmlFor='hometype-houses-filters-input'>
                           <span id='hometype-houses-filters-label'
                             className='hometype-houses-label option'>Houses</span>
@@ -398,18 +409,18 @@ class SearchBar extends Component {
                       </li>
                       <li id='hometype-apart-filters' className='hometype-apart selected'>
                         <input name='houseType' tabIndex='-1' id='hometype-apart-filters-input'
-                          type='radio' className='hometype-apart-input checkbox' data-za-label='MFH' 
-                          onClick={ (event) => this.handleInputChange(event,allProperties, null, null, 'apartment') }
-                          />
+                          type='radio' className='hometype-apart-input checkbox' data-za-label='MFH'
+                          onClick={(event) => this.handleInputChange(event, allProperties, null, null, 'apartment')}
+                        />
                         <label htmlFor='hometype-apart-filters-input'><span id='hometype-apart-filters-label'
                           className='hometype-apart-label option'>Apartments</span>
                         </label>
                       </li>
                       <li id='hometype-condo-filters' className='hometype-condo selected'>
                         <input name='houseType' tabIndex='-1' id='hometype-condo-filters-input'
-                          type='radio' className='hometype-condo-input checkbox' data-za-label='Condo' 
-                          onClick={ (event) => this.handleInputChange(event,allProperties, null, null, 'condo') }
-                          />
+                          type='radio' className='hometype-condo-input checkbox' data-za-label='Condo'
+                          onClick={(event) => this.handleInputChange(event, allProperties, null, null, 'condo')}
+                        />
                         <label htmlFor='hometype-condo-filters-input'>
                           <span id='hometype-condo-filters-label'
                             className='hometype-condo-label option'>Condos/co-ops</span>
@@ -417,17 +428,17 @@ class SearchBar extends Component {
                       </li>
                       <li id='hometype-townhome-filters' className='hometype-townhome selected'>
                         <input name='houseType' tabIndex='-1' id='hometype-townhome-filters-input'
-                          type='radio' className='hometype-townhome-input checkbox' data-za-label='Townhomes' 
-                          onClick={ (event) => this.handleInputChange(event,allProperties, null, null, 'townhome') }
-                          />
+                          type='radio' className='hometype-townhome-input checkbox' data-za-label='Townhomes'
+                          onClick={(event) => this.handleInputChange(event, allProperties, null, null, 'townhome')}
+                        />
                         <label htmlFor='hometype-townhome-filters-input'>
                           <span id='hometype-townhome-filters-label'
                             className='hometype-townhome-label option'>Townhomes</span>
                         </label>
                       </li>
                       <li id='hometype-land-filters' className='hometype-land selected'>
-                        <input name='houseType' tabIndex='-1' id='hometype-land-filters-input' type='radio' className='hometype-land-input checkbox' data-za-label='Lot' 
-                        onClick={ (event) => this.handleInputChange(event,allProperties, null, null, 'lot') }
+                        <input name='houseType' tabIndex='-1' id='hometype-land-filters-input' type='radio' className='hometype-land-input checkbox' data-za-label='Lot'
+                          onClick={(event) => this.handleInputChange(event, allProperties, null, null, 'lot')}
                         />
                         <label htmlFor='hometype-land-filters-input'>
                           <span id='hometype-land-filters-label'
@@ -442,7 +453,7 @@ class SearchBar extends Component {
                 <fieldset className='filter-menu more-menu'>
                   <legend data-za-label='More'>
                     <a href="#/" className='menu-label' tabIndex='0'>
-                      <div id="more-menu-label" onClick={() => this.menuItemClicked('more-menu-label')}> More 
+                      <div id="more-menu-label" onClick={() => this.menuItemClicked('more-menu-label')}> More
                       <span id='applied-filter-count' />
                         <i className='fas fa-sort-down' />
                         <i className='fas fa-sort-up' />
@@ -450,7 +461,7 @@ class SearchBar extends Component {
                     </a>
                   </legend>
 
-                  
+
                   <div className="filter-pane more-pane" id="">
                     <div id="baths-entries" className="search-entry">
                       <div className="title">Baths</div>
@@ -458,10 +469,10 @@ class SearchBar extends Component {
                         <span id="baths-readout" className="options-display" data-za-action="Baths">1.5+</span>
                         <span className="icon-arrow-menu-down"></span>
                         <ul id="bath-options" className="dropdown-options">
-                          <li data-value="0," id=""><a href="#/"  className="option" tabIndex="-1">0+</a></li>
-                          <li data-value="1.0," id=""><a href="#/"  className="option" tabIndex="-1">1+</a></li>
+                          <li data-value="0," id=""><a href="#/" className="option" tabIndex="-1">0+</a></li>
+                          <li data-value="1.0," id=""><a href="#/" className="option" tabIndex="-1">1+</a></li>
                           <li data-value="1.5," id="" className="selected"><a href="#/" className="option" tabIndex="-1">1.5+</a></li>
-                          <li data-value="2.0,"><a href="#/"  className="option" tabIndex="-1">2+</a></li>
+                          <li data-value="2.0,"><a href="#/" className="option" tabIndex="-1">2+</a></li>
                           <li data-value="3.0,"><a href="#/" className="option" tabIndex="-1">3+</a></li>
                           <li data-value="4.0,"><a href="#/" className="option" tabIndex="-1">4+</a></li>
                           <li data-value="5.0,"><a href="#/" className="option" tabIndex="-1">5+</a></li>
@@ -524,7 +535,7 @@ class SearchBar extends Component {
                       <div id="custom-lot-size-entries" className="hide">
                         <div className="title">
                           <ul className="form-group radio-buttons">
-                            <li><input type="radio" id="custom-lot-sqft" name="lot_custom" className="radio custom-lot" value="sqft"  />
+                            <li><input type="radio" id="custom-lot-sqft" name="lot_custom" className="radio custom-lot" value="sqft" />
                               <label htmlFor="custom-lot-sqft">Sqft</label>
                             </li>
                             <li>
@@ -588,7 +599,7 @@ class SearchBar extends Component {
                       <div className="title">Keywords</div>
                       <textarea id="attribute-terms" placeholder="Garage, pool, waterfront, etc."></textarea>
                     </div>
-                    <a href="#/" className="button_primary" rel="nofollow" id="filterSearchButton"  title="Search"><span> Apply </span></a>
+                    <a href="#/" className="button_primary" rel="nofollow" id="filterSearchButton" title="Search"><span> Apply </span></a>
                   </div>
                 </fieldset>
               </form>
@@ -600,7 +611,7 @@ class SearchBar extends Component {
             <fieldset className='filter-menu save-search'>
               <legend data-za-label='Save search'>
                 <a href="#/" data-za-label-submit='Save Search Toolbox submit'
-                   className='lightbox-show zsg-link_primary' data-za-label='Save search'>
+                  className='lightbox-show zsg-link_primary' data-za-label='Save search'>
                   Save Search
                 </a>
               </legend>
@@ -626,4 +637,4 @@ const mapStateToProps = (state) => ({
 })
 
 
-export default connect(mapStateToProps,{ loadProperties, filterProperties })(SearchBar);
+export default connect(mapStateToProps, { loadProperties, filterProperties})(SearchBar);

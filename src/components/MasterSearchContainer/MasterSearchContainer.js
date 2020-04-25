@@ -8,6 +8,7 @@ class MasterSearchContainer extends Component {
   constructor (props) {
     super(props)
     this.state = {
+      pageNumber:0,
       listingsData,
       city: 'All',
       houseType: 'All',

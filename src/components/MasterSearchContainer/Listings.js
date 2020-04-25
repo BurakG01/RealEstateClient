@@ -1,15 +1,16 @@
 import React, { Component } from 'react'
-import { connect }  from 'react-redux'
+import { connect } from 'react-redux'
 import { loadProperties, filterProperties } from "../../redux/actions";
+import { Link } from 'react-router-dom';
 class Header extends Component {
-  constructor () {
+  constructor() {
     super()
     this.state = {
 
     }
     this.loopListings = this.loopListings.bind(this)
   }
-  changeAscDesc (event, properties) {
+  changeAscDesc(event, properties) {
     const { value } = event.target
     console.log("ascdec value when clicked", value)
     console.log(properties.allProperties);
@@ -17,8 +18,8 @@ class Header extends Component {
     this.props.filterProperties(properties.allProperties, value)
   }
 
-  loopListings (properties) {
-    if(typeof properties.filteredProperties !== 'undefined' && properties.filteredProperties.length > 0){
+  loopListings(properties) {
+    if (typeof properties.filteredProperties !== 'undefined' && properties.filteredProperties.length > 0) {
       return properties.filteredProperties.map((property, index) => {
         // This is the long box view
         if (this.props.globalState.view === 'box') {
@@ -49,14 +50,14 @@ class Header extends Component {
                       </div>
 
                     </div>
-                      {
+                    {
                       property.owners.map((e) => (
                         <div className='view-btn'>
-                        {e.ownerName}
-                          </div>
-                        ))
-                        }
-                   
+                          {e.ownerName}
+                        </div>
+                      ))
+                    }
+
                   </div>
                 </div>
                 <div className='bottom-info'>
@@ -69,59 +70,59 @@ class Header extends Component {
         } else {
           // This is the long view
           return (
-              <div className='col-md-12 col-lg-6' key={index}>
-                <div className='listing'>
-                  <div className='listing-img' style={{ background: `url("${property.image}") no-repeat center center` }}>
-                    <span className='address'>{property.address}</span>
-                    <div className='details'>
-    
-                      <div className='col-md-3'>
-                        <div className='user-img' />
-                      </div>
-    
-                      <div className='col-md-9'>
-                        <div className='user-details'>
-                          <span className='user-name'>Jack Smith </span>
-                          <span className='post-date'>05/05/2017</span>
-                        </div>
-    
-                        <div className='listing-details'>
-                          <div className='floor-space'><i className='fa fa-square-o' aria-hidden='true' /> <span>{property.floorSpace} ft&sup2;</span></div>
-                          <div className='bedrooms'>
-                            <i className='fa fa-bed' aria-hidden='true' />
-                            <span>{property.rooms} bedrooms</span>
-                          </div>
-                        </div>
+            <div className='col-md-12 col-lg-6' key={index}>
+              <div className='listing'>
+                <div className='listing-img' style={{ background: `url("${property.image}") no-repeat center center` }}>
+                  <span className='address'>{property.address}</span>
+                  <div className='details'>
 
-                      </div>
-                      {
-                      property.owners.map((e) => (
-                        <div className='view-btn'>
-                        {e.ownerName}
-                          </div>
-                        ))
-                        }
-    
+                    <div className='col-md-3'>
+                      <div className='user-img' />
                     </div>
-                  </div>
-                  <div className='bottom-info'>
-                    <span className='price'>{property.price}</span>
-                    <span className='location'><i className='fa fa-map-marker' aria-hidden='true' /> {property.city}, {property.state}</span>
+
+                    <div className='col-md-9'>
+                      <div className='user-details'>
+                        <span className='user-name'>Jack Smith </span>
+                        <span className='post-date'>05/05/2017</span>
+                      </div>
+
+                      <div className='listing-details'>
+                        <div className='floor-space'><i className='fa fa-square-o' aria-hidden='true' /> <span>{property.floorSpace} ft&sup2;</span></div>
+                        <div className='bedrooms'>
+                          <i className='fa fa-bed' aria-hidden='true' />
+                          <span>{property.rooms} bedrooms</span>
+                        </div>
+                      </div>
+
+                    </div>
+                    {
+                      property.owners.map((e) => (
+                        <div className='view-btn' >
+                          {e.ownerName}
+                        </div>
+                      ))
+                    }
+
                   </div>
                 </div>
+                <div className='bottom-info'>
+                  <span className='price'>{property.price}</span>
+                  <span className='location'><i className='fa fa-map-marker' aria-hidden='true' /> {property.city}, {property.state}</span>
+                </div>
               </div>
-            )
-          }
+            </div>
+          )
         }
+      }
       )
 
-    }else{
+    } else {
 
       return properties.allProperties.map((property, index) => {
-      
+
         // This is the long box view
         if (this.props.globalState.view === 'box') {
-          
+
           return (
             <div className='col-sm-12 col-md-6 col-lg-4 col-xl-3' key={index}>
               <div className='listing'>
@@ -149,12 +150,12 @@ class Header extends Component {
                       </div>
 
                       {
-                      property.owners.map((e) => (
-                        <div className='view-btn'>
-                        {e.ownerName}
-                          </div>
+                        property.owners.map((e) => (
+                         <div className='view-btn'>
+                         {e.ownerName}
+                       </div>
                         ))
-                        }
+                      }
                     </div>
                   </div>
                 </div>
@@ -173,17 +174,17 @@ class Header extends Component {
                 <div className='listing-img' style={{ background: `url("${property.image}") no-repeat center center` }}>
                   <span className='address'>{property.address}</span>
                   <div className='details'>
-  
+
                     <div className='col-md-3'>
                       <div className='user-img' />
                     </div>
-  
+
                     <div className='col-md-9'>
                       <div className='user-details'>
                         <span className='user-name'>Jack Smith </span>
                         <span className='post-date'>05/05/2017</span>
                       </div>
-  
+
                       <div className='listing-details'>
                         <div className='floor-space'><i className='fa fa-square-o' aria-hidden='true' /> <span>{property.floorSpace} ft&sup2;</span></div>
                         <div className='bedrooms'>
@@ -192,14 +193,14 @@ class Header extends Component {
                         </div>
                       </div>
                       {
-                      property.owners.map((e) => (
-                        <div className='view-btn'>
-                        {e.ownerName}
+                        property.owners.map((e) => (
+                          <div className='view-btn'>
+                            {e.ownerName}
                           </div>
                         ))
-                        }
+                      }
                     </div>
-  
+
                   </div>
                 </div>
                 <div className='bottom-info'>
@@ -217,9 +218,17 @@ class Header extends Component {
 
 
   }
+  loopPages(pageNumber){
+ console.log("listin",pageNumber)
+  }
+  goToUrl(url){
+    console.log(url)
+  }
+ 
 
-  render () {
-    const properties  = this.props.properties
+  render() {
+    const properties = this.props.properties
+   
     return (
       <section id='listings' className='col-sm-12 col-md-12 col-lg-12'>
         {/* <section className='search-area'>
