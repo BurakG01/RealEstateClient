@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { loadProperties, filterProperties } from "../../redux/actions";
-import { Link } from 'react-router-dom';
+
 class Header extends Component {
   constructor() {
     super()
@@ -235,7 +235,7 @@ class Header extends Component {
           <input type='text' name='search' placeholder='Search here...' onChange={() => this.changeAscDesc} />
         </section> */}
 
-        <section className='sortby-area'>
+        {/* <section className='sortby-area'>
           <div className='results'>{this.props.globalState.filteredData.length} result found</div>
           <div className='sort-options'>
             <select name='sortby' className='sortby' onChange={(event) => this.changeAscDesc(event, properties)}>
@@ -249,7 +249,7 @@ class Header extends Component {
             </div>
 
           </div>
-        </section>
+        </section> */}
 
         <section className='listings-results'>
           <div className='container'>

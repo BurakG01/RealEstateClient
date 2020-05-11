@@ -9,5 +9,10 @@ export default {
         var path=resource+'towns/'
         return Client.get(`${path}${cityName}`);
     },
+    getPostNeighborhoods(townList) {
+        console.log(townList)
+        var path=resource+'neighborhoods/' 
+        return Client.post(`${path}`,townList);
+    },
     // MANY OTHER ENDPOINT RELATED STUFFS
 };

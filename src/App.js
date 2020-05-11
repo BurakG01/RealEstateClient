@@ -9,6 +9,8 @@ import './assets/styles/css/bootstrap.min.css'
 import './assets/styles/css/fontawesome.min.css'
 import './assets/styles/css/hamburgers.min.css'
 import './assets/styles/sass/main.scss'
+import '../node_modules/react-widgets/dist/css/react-widgets.css'
+
 
 class App extends Component {
   render () {
@@ -20,8 +22,18 @@ class App extends Component {
         <Route exact path={['/', '/buy', '/sell', '/rent', '/estimate']} component={props => <FrontPage {...props} />} />
 
         {/* Property Search Routes */}
-        <Route exact path='/property' component={props => <SearchBar {...props} />} />
-        <Route exact path='/property' component={props => <MasterSearchContainer {...props} />} />
+        <div className="row">
+        
+        <div className="col-3" style={{ height: "max-content" }} >
+          <Route exact path='/property' component={props => <SearchBar {...props} />} />
+          </div>
+       
+          <div className="col-9" >
+          <Route exact path='/property' component={props => <MasterSearchContainer {...props} />} />
+          </div>
+        </div>
+      
+    
       </div>
     )
   }

@@ -32,21 +32,18 @@ class HeroSearchBar extends Component {
     })
 
     placesAutocomplete.on('change', e => {
-
+ console.log(e.suggestion);
       var query = '';
-      if (e.suggestion.type === "city") {
+      if (e.suggestion.administrative) {
 
-        if (e.suggestion.administrative) {
-          query = `city=${e.suggestion.administrative}&&town=${e.suggestion.name}`
+        if (e.suggestion.county) {
+          query = `city=${e.suggestion.administrative}&&town=${e.suggestion.county}`
         } else {
-          query = `city=${e.suggestion.name}`
+          query = `city=${e.suggestion.administrative}&&town=${e.suggestion.name}`
         }
 
-      } else if (e.suggestion.type === "address") {
-
-        query = `city=${e.suggestion.administrative}&&town=${e.suggestion.county}&&street=${e.suggestion.name}`
       } else {
-        console.log(query)
+        query = `city=${e.suggestion.name}`
       }
    
 
@@ -58,10 +55,6 @@ class HeroSearchBar extends Component {
   }
   handleChange(event) {
     this.setState({ query: event.target.value })
-  }
-  handleSearch() {
-
-
   }
   render() {
 

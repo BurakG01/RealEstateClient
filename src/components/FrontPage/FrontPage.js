@@ -25,8 +25,6 @@ export default class LandingPage extends Component {
         <Route exact path='/rent' component={props => <HeroDisplayRent {...props} />} />
         <Route exact path='/sell' component={props => <HeroDisplaySell {...props} />} />
         <Route exact path='/estimate' component={props => <HeroDisplayEstimate {...props} />} />
-        <RegionInfoFooter />
-        <BrandsFooter />
         <Footer />
       </div>
     )
