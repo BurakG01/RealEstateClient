@@ -10,7 +10,6 @@ export default {
         return Client.get(`${path}${cityName}`);
     },
     getPostNeighborhoods(townList) {
-        console.log(townList)
         var path=resource+'neighborhoods/' 
         return Client.post(`${path}`,townList);
     },

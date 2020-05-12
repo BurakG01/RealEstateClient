@@ -41,8 +41,8 @@ class SearchBar extends Component {
         { Name: '1+1', Code: '4' }],
 
       streets :[],
-      streetList:[]
-
+      streetList:[],
+      countiesCode:[]
     }
 
     this.checkFields = { text: 'Name', value: 'Code' };
@@ -50,7 +50,6 @@ class SearchBar extends Component {
     this.checkStreetFields = { groupBy: 'district', text: 'name', value: 'id' };
 
     this.onFiltering = (e) => {
-      console.log(this.state.counties)
       let query = new Query();
       query = (e.text !== '') ? query.where('Name', 'startswith', e.text, true) : query;
       e.updateData(this.state.counties, query);
@@ -94,7 +93,7 @@ class SearchBar extends Component {
           ],
         });
       });
-      console.log(listings)
+    
       this.props.loadProperties(listings)
 
       this.setState({ properties: this.props.properties })
@@ -103,36 +102,56 @@ class SearchBar extends Component {
       console.log("err", err);
     })
   }
-  Selected = args => {
-
+  SelectedCity = args => {
     const locationRepository = RepositoryFactory.get("locations");
     locationRepository.getPost(args.itemData.Name).then((response) => {
       this.setState({ counties: response.data })
     })
-
     this.setState({
       city: args.itemData.Name
     });
   }
 
-  onChangeCounties = () => {
+  countiesSelection=event=>{
     const locationRepository = RepositoryFactory.get("locations");
-    let counties = this.mulObj1.text.split(',');
-  
-    let body={towns:this.mulObj1.value}
-    this.setState({
-      towns: counties,
-    });
-    locationRepository.getPostNeighborhoods(body).then((response) => {
+    let countiesCode =this.state.countiesCode;
+    let towns=this.state.towns;
+    var code = event.itemData.code;
+    var name=event.itemData.name
+    if(event.name==="removing"){
+      var nameIndex = towns.indexOf(name)
+      var codeIndex = towns.indexOf(code)
+      towns.splice(nameIndex, 1);
+      countiesCode.splice(codeIndex,1)
+    }else{
+      towns.push(name);
+      countiesCode.push(code);
+    } 
+    
+    locationRepository.getPostNeighborhoods({towns:this.state.countiesCode}).then((response) => {
       this.setState({streets: response.data })
     })
   }
-  onChangeRooms = () => {
-    console.log(this.mulObj3.text)
-    let rooms = this.mulObj3.text.split(',');
-    this.setState({
-      selectedRooms: rooms,
-    });
+  roomsSelection=event=>{
+    let selectedRooms =this.state.selectedRooms;
+    var value = event.itemData.Name;
+    if(event.name==="removing"){
+      var index = selectedRooms.indexOf(value)
+      selectedRooms.splice(index, 1);
+    }else{
+      selectedRooms.push(value);
+    }
+  }
+  streetSelection=event=>{
+   
+    let streetList =this.state.streetList;
+    var value = event.itemData.id;
+    if(event.name==="removing"){
+      var index = streetList.indexOf(value)
+      streetList.splice(index, 1);
+    }else{
+      streetList.push(value);
+    }
   }
 
   search = () => {
@@ -158,7 +177,6 @@ class SearchBar extends Component {
     this.getListings(filter)
   }
   AdvertType = event => {
-
     this.setState({
       homeType: event.selected ? event.data.value : '',
     });
@@ -168,7 +186,6 @@ class SearchBar extends Component {
     this.setState({
       streetList: event.value,
     });
-   
   }
   AdvertOwnerType = event => {
     this.setState({
@@ -196,7 +213,7 @@ class SearchBar extends Component {
                   <DropDownListComponent
                     id="country" ref={(dropdownlist) => { this.listObj = dropdownlist; }}
                     dataSource={this.state.cities} filtering={this.onFiltering.bind(this)}
-                    select={this.Selected}
+                    select={this.SelectedCity}
                     noRecordsTemplate={"Eşleşme Bulunamadı"}
                     filterBarPlaceholder='Şehir' allowFiltering={true} fields={this.checkFields}
                     placeholder="Şehir " popupHeight="220px" />
@@ -218,7 +235,8 @@ class SearchBar extends Component {
                     selectAllText={"Hepsi"}
                     unSelectAllText={"Hiçbiri"}
                     showDropDownIcon={true}
-                    change={this.onChangeCounties.bind(this)}
+                    select={this.countiesSelection.bind(this)}
+                    removing={this.countiesSelection.bind(this)}
                     noRecordsTemplate={"Eşleşme Bulunamadı"}
                     filterBarPlaceholder="İlçe " popupHeight="350px">
                     <Inject services={[CheckBoxSelection]} />
@@ -236,7 +254,8 @@ class SearchBar extends Component {
                      dataSource={this.state.streets}
                     fields={this.checkStreetFields}
                     enableGroupCheckBox={true}
-                    change={this.onChangeStrees.bind(this)}
+                    removing={this.streetSelection.bind(this)}
+                    select={this.streetSelection.bind(this)}
                     placeholder="Mahalle "
                     selectAllText={"Hepsi"}
                     unSelectAllText={"Hiçbiri"}
@@ -258,7 +277,8 @@ class SearchBar extends Component {
                     dataSource={this.state.rooms}
                     fields={this.checkFields}
                     showDropDownIcon={true}
-                    change={this.onChangeRooms.bind(this)}
+                    removing={this.roomsSelection.bind(this)}
+                    select={this.roomsSelection.bind(this)}
                     placeholder="Oda Sayısı"
                     selectAllText={"Hepsi"}
                     unSelectAllText={"Hiçbiri"}
