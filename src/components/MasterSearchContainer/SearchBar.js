@@ -4,19 +4,26 @@ import { loadProperties, filterProperties } from "../../redux/actions";
 import { Query } from '@syncfusion/ej2-data';
 import RepositoryFactory from '../../Api/RepositoryFactory'
 import { enableRipple } from '@syncfusion/ej2-base';
+import Listings from './Listings.js'
+import GoogleMapReact from 'google-map-react';
+import Loader from 'react-loader-spinner'
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
 import { ButtonComponent, ChipDirective, ChipListComponent, ChipsDirective } from '@syncfusion/ej2-react-buttons';
 import {
   MultiSelectComponent,
   CheckBoxSelection,
   Inject, DropDownListComponent
 } from '@syncfusion/ej2-react-dropdowns';
+import Pagination from '../../components/Pagination'
 import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
+const AnyReactComponent = ({ text }) => <div className="marker" >{text}</div>;
 enableRipple(true);
 class SearchBar extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      pageNumber: 0,
+      loading:true,
+      totalCount:0,
       filter: {},
       listings: [],
       properties: [],
@@ -40,10 +47,13 @@ class SearchBar extends Component {
         { Name: '4+1', Code: '3' },
         { Name: '1+1', Code: '4' }],
 
-      streets :[],
-      streetList:[],
-      countiesCode:[]
+      streets: [],
+      streetList: [],
+      countiesCode: [],
+      deneme: ['sdsd']
     }
+    this.locationRepository = RepositoryFactory.get("locations");
+    this.listingRepository = RepositoryFactory.get("listings");
 
     this.checkFields = { text: 'Name', value: 'Code' };
     this.countyFields = { text: 'name', value: 'code' };
@@ -62,14 +72,18 @@ class SearchBar extends Component {
       city: params.get('city'),
       towns: params.get('town') ? [params.get('town')] : null,
     }
+    this.setState({
+      city:  params.get('city'),
+      towns:params.get('town') ? [params.get('town')] : []
+    });
 
     this.getListings(filter);
   }
 
-  getListings = filter => {
 
-    const listingRepository = RepositoryFactory.get("listings");
-    listingRepository.getPost(filter).then((res) => {
+  getListings = filter => {
+   
+    this.listingRepository.getPost(filter).then((res) => {
       let listings = [];
       res.data.listings.forEach(listing => {
         listings.push({
@@ -93,18 +107,16 @@ class SearchBar extends Component {
           ],
         });
       });
-    
-      this.props.loadProperties(listings)
+      
+      this.setState({ listings: listings ,totalCount:res.data.totalCount, loading:false })
 
-      this.setState({ properties: this.props.properties })
 
     }).catch((err) => {
       console.log("err", err);
     })
   }
   SelectedCity = args => {
-    const locationRepository = RepositoryFactory.get("locations");
-    locationRepository.getPost(args.itemData.Name).then((response) => {
+    this.locationRepository.getPost(args.itemData.Name).then((response) => {
       this.setState({ counties: response.data })
     })
     this.setState({
@@ -112,68 +124,85 @@ class SearchBar extends Component {
     });
   }
 
-  countiesSelection=event=>{
-    const locationRepository = RepositoryFactory.get("locations");
-    let countiesCode =this.state.countiesCode;
-    let towns=this.state.towns;
+  countiesSelection = event => {
+
+    let countiesCode = this.state.countiesCode;
+    let towns = this.state.towns;
     var code = event.itemData.code;
-    var name=event.itemData.name
-    if(event.name==="removing"){
+    var name = event.itemData.name
+   
+    if (event.name === "removing") {
       var nameIndex = towns.indexOf(name)
       var codeIndex = towns.indexOf(code)
       towns.splice(nameIndex, 1);
-      countiesCode.splice(codeIndex,1)
-    }else{
+      countiesCode.splice(codeIndex, 1)
+    } else {
       towns.push(name);
       countiesCode.push(code);
-    } 
-    
-    locationRepository.getPostNeighborhoods({towns:this.state.countiesCode}).then((response) => {
-      this.setState({streets: response.data })
+    }
+
+    this.locationRepository.getPostNeighborhoods({ towns: this.state.countiesCode }).then((response) => {
+      this.setState({ streets: response.data })
     })
   }
-  roomsSelection=event=>{
-    let selectedRooms =this.state.selectedRooms;
+  roomsSelection = event => {
+    let selectedRooms = this.state.selectedRooms;
     var value = event.itemData.Name;
-    if(event.name==="removing"){
+
+    if (event.name === "removing") {
       var index = selectedRooms.indexOf(value)
       selectedRooms.splice(index, 1);
-    }else{
+    } else {
       selectedRooms.push(value);
     }
+
   }
-  streetSelection=event=>{
-   
-    let streetList =this.state.streetList;
+  streetSelection = event => {
+
+    let streetList = this.state.streetList;
     var value = event.itemData.id;
-    if(event.name==="removing"){
+    if (event.name === "removing") {
       var index = streetList.indexOf(value)
       streetList.splice(index, 1);
-    }else{
+    } else {
       streetList.push(value);
     }
   }
+  onPageChanged = data => {
+  
+    let { city, towns, selectedRooms, ownerType, homeType, furnitureType, keyword, streetList } = this.state;
 
-  search = () => {
-    let city = this.state.city
-    let towns = this.state.towns
-    let rooms = this.state.selectedRooms
-    let ownerType = this.state.ownerType
-    let homeType = this.state.homeType
-    let furnitureType = this.state.furnitureType
-    let query = this.state.keyword
-    let streets=this.state.streetList
     let filter = {
       city: city,
       towns: towns,
-      roomNumber: rooms,
+      roomNumber: selectedRooms,
       advertOwnerType: ownerType,
       advertStatus: homeType,
       furnitureType: furnitureType,
-      query: query,
-      streets:streets
-
+      query: keyword,
+      streets: streetList,
+      pageNumber:data.currentPage-1
     }
+  
+    this.getListings(filter);
+   
+  }
+  search = () => {
+
+    let { city, towns, selectedRooms, ownerType, homeType, furnitureType, keyword, streetList } = this.state;
+
+    let filter = {
+      city: city,
+      towns: towns,
+      roomNumber: selectedRooms,
+      advertOwnerType: ownerType,
+      advertStatus: homeType,
+      furnitureType: furnitureType,
+      query: keyword,
+      streets: streetList
+    }
+  
+    this.setState({ loading: true })
     this.getListings(filter)
   }
   AdvertType = event => {
@@ -182,7 +211,7 @@ class SearchBar extends Component {
     });
 
   }
-  onChangeStrees=event=>{
+  onChangeStrees = event => {
     this.setState({
       streetList: event.value,
     });
@@ -203,154 +232,208 @@ class SearchBar extends Component {
     });
   }
   render() {
-    return (
-      <div className="container">
-        <section>
-          <section>
-            <div className='control-pane'>
-              <div className='control-section col-lg-8'>
-                <div id='filtering' className="control-styles">
-                  <DropDownListComponent
-                    id="country" ref={(dropdownlist) => { this.listObj = dropdownlist; }}
-                    dataSource={this.state.cities} filtering={this.onFiltering.bind(this)}
-                    select={this.SelectedCity}
-                    noRecordsTemplate={"Eşleşme Bulunamadı"}
-                    filterBarPlaceholder='Şehir' allowFiltering={true} fields={this.checkFields}
-                    placeholder="Şehir " popupHeight="220px" />
+  
+   var totalCount=this.state.totalCount;
+   var loading=this.state.loading
+ 
+
+       return (
+      <div className="row">
+
+        <div className="col-3" style={{ height: "max-content" }} >
+          <div className="container">
+            <section>
+              <section>
+                <div className='control-pane'>
+                  <div className='control-section col-lg-8'>
+                    <div id='filtering' className="control-styles">
+                      <DropDownListComponent
+                        id="country" ref={(dropdownlist) => { this.listObj = dropdownlist; }}
+                        dataSource={this.state.cities} filtering={this.onFiltering.bind(this)}
+                        select={this.SelectedCity}
+                        noRecordsTemplate={"Eşleşme Bulunamadı"}
+                        filterBarPlaceholder='Şehir' allowFiltering={true} fields={this.checkFields}
+                        placeholder="Şehir " popupHeight="220px" />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </section>
-          <br></br>
-          <section>
-            <div id="multichecbox" className='control-pane'>
-              <div className='control-section col-lg-8'>
-                <div id="multigroup" className="control-styles">
-                  <MultiSelectComponent id="checkbox"
-                    ref={(scope) => { this.mulObj1 = scope; }}
-                    dataSource={this.state.counties}
-                    fields={this.countyFields}
-                    placeholder="İlçe " mode="CheckBox"
-                    showSelectAll={true}
-                    selectAllText={"Hepsi"}
-                    unSelectAllText={"Hiçbiri"}
-                    showDropDownIcon={true}
-                    select={this.countiesSelection.bind(this)}
-                    removing={this.countiesSelection.bind(this)}
-                    noRecordsTemplate={"Eşleşme Bulunamadı"}
-                    filterBarPlaceholder="İlçe " popupHeight="350px">
-                    <Inject services={[CheckBoxSelection]} />
-                  </MultiSelectComponent>
+              </section>
+              <br></br>
+              <section>
+                <div id="multichecbox" className='control-pane'>
+                  <div className='control-section col-lg-8'>
+                    <div id="multigroup" className="control-styles">
+                      <MultiSelectComponent id="checkbox"
+                        ref={(scope) => { this.mulObj1 = scope; }}
+                        dataSource={this.state.counties}
+                        fields={this.countyFields}
+                        placeholder="İlçe " mode="CheckBox"
+                        showSelectAll={true}
+                        selectAllText={"Hepsi"}
+                        unSelectAllText={"Hiçbiri"}
+                        showDropDownIcon={true}
+                        select={this.countiesSelection.bind(this)}
+                        removing={this.countiesSelection.bind(this)}
+                        noRecordsTemplate={"Eşleşme Bulunamadı"}
+                        filterBarPlaceholder="İlçe " popupHeight="350px">
+                        <Inject services={[CheckBoxSelection]} />
+                      </MultiSelectComponent>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </section>
-          <br></br>
-          <section>
-            <div id="multichecbox" className='control-pane'>
-              <div className='control-section col-lg-8'>
-                <div id="multigroup" className="control-styles">
-                  <MultiSelectComponent id="checkbox" ref={(scope) => { this.mulObj4 = scope; }}
-                     dataSource={this.state.streets}
-                    fields={this.checkStreetFields}
-                    enableGroupCheckBox={true}
-                    removing={this.streetSelection.bind(this)}
-                    select={this.streetSelection.bind(this)}
-                    placeholder="Mahalle "
-                    selectAllText={"Hepsi"}
-                    unSelectAllText={"Hiçbiri"}
-                    noRecordsTemplate={"Eşleşme Bulunamadı"}
-                    mode="CheckBox" showSelectAll={true}
-                    showDropDownIcon={true} filterBarPlaceholder="Mahalle " popupHeight="350px">
-                    <Inject services={[CheckBoxSelection]} />
-                  </MultiSelectComponent>
+              </section>
+              <br></br>
+              <section>
+                <div id="multichecbox" className='control-pane'>
+                  <div className='control-section col-lg-8'>
+                    <div id="multigroup" className="control-styles">
+                      <MultiSelectComponent id="checkbox" ref={(scope) => { this.mulObj4 = scope; }}
+                        dataSource={this.state.streets}
+                        fields={this.checkStreetFields}
+                        enableGroupCheckBox={true}
+                        removing={this.streetSelection.bind(this)}
+                        select={this.streetSelection.bind(this)}
+                        placeholder="Mahalle "
+                        selectAllText={"Hepsi"}
+                        unSelectAllText={"Hiçbiri"}
+                        noRecordsTemplate={"Eşleşme Bulunamadı"}
+                        mode="CheckBox" showSelectAll={true}
+                        showDropDownIcon={true} filterBarPlaceholder="Mahalle " popupHeight="350px">
+                        <Inject services={[CheckBoxSelection]} />
+                      </MultiSelectComponent>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </section>
-          <br></br>
-          <section>
-            <div id="multichecbox" className='control-pane'>
-              <div className='control-section col-lg-8'>
-                <div id="multigroup" className="control-styles">
-                  <MultiSelectComponent id="checkbox" ref={(scope) => { this.mulObj3 = scope; }}
-                    dataSource={this.state.rooms}
-                    fields={this.checkFields}
-                    showDropDownIcon={true}
-                    removing={this.roomsSelection.bind(this)}
-                    select={this.roomsSelection.bind(this)}
-                    placeholder="Oda Sayısı"
-                    selectAllText={"Hepsi"}
-                    unSelectAllText={"Hiçbiri"}
-                    mode="CheckBox"
-                    showSelectAll={true}
-                    allowFiltering={false}
-                    showDropDownIcon={true} popupHeight="350px">
-                    <Inject services={[CheckBoxSelection]} />
-                  </MultiSelectComponent>
+              </section>
+              <br></br>
+              <section>
+                <div id="multichecbox" className='control-pane'>
+                  <div className='control-section col-lg-8'>
+                    <div id="multigroup" className="control-styles">
+                      <MultiSelectComponent id="checkbox" ref={(scope) => { this.mulObj3 = scope; }}
+                        dataSource={this.state.rooms}
+                        fields={this.checkFields}
+                        showDropDownIcon={true}
+                        removing={this.roomsSelection.bind(this)}
+                        select={this.roomsSelection.bind(this)}
+                        placeholder="Oda Sayısı"
+                        selectAllText={"Hepsi"}
+                        unSelectAllText={"Hiçbiri"}
+                        mode="CheckBox"
+                        showSelectAll={true}
+                        allowFiltering={false}
+                        showDropDownIcon={true} popupHeight="350px">
+                        <Inject services={[CheckBoxSelection]} />
+                      </MultiSelectComponent>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </section>
-          <br></br>
-          <br></br>
-          <section>
-            <div id="multichecbox" className='control-pane'>
-              <div className='control-section col-lg-8'>
-                <div id="multigroup" className="control-styles">
-                  <TextBoxComponent input={this.keyword.bind(this)}
-                    placeholder="Kelime ile Ara" cssClass="e-outline" floatLabelType="Auto" />
+              </section>
+              <br></br>
+              <br></br>
+              <section>
+                <div id="multichecbox" className='control-pane'>
+                  <div className='control-section col-lg-8'>
+                    <div id="multigroup" className="control-styles">
+                      <TextBoxComponent input={this.keyword.bind(this)}
+                        placeholder="Kelime ile Ara" cssClass="e-outline" floatLabelType="Auto" />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </section>
-          <br></br>
-          <br></br>
-          <section>
-            <div className="d-flex justify-content-center">
-              <ChipListComponent click={this.AdvertType.bind(this)} id="chip-choice" selection="Single" cssClass="e-outline">
-                <ChipsDirective  >
-                  <ChipDirective text="Hepsi" value=""></ChipDirective>
-                  <ChipDirective text="Kiralık" value="Kiralık" ></ChipDirective>
-                  <ChipDirective text="Satılık" value="Satılık"></ChipDirective>
-                </ChipsDirective>
-              </ChipListComponent>
-            </div>
-          </section>
-          <br></br>
-          <section>
-            <div className="d-flex justify-content-center">
-              <ChipListComponent click={this.AdvertOwnerType.bind(this)} id="chip-choice" selection="Single" cssClass="e-outline">
-                <ChipsDirective  >
-                  <ChipDirective text="Hepsi" value=""></ChipDirective>
-                  <ChipDirective text="Sahibinden" value="Personal" ></ChipDirective>
-                  <ChipDirective text="Emlakçıdan" value="RealEstateAgent"></ChipDirective>
-                </ChipsDirective>
-              </ChipListComponent>
-            </div>
-          </section>
-          <br></br>
-          <section>
-            <div className="d-flex justify-content-center">
-              <ChipListComponent click={this.FurnitureType.bind(this)} id="chip-choice" selection="Single" cssClass="e-outline">
-                <ChipsDirective  >
-                  <ChipDirective text="Hepsi" value=""></ChipDirective>
-                  <ChipDirective text="Eşyalı" value="Eşyalı" ></ChipDirective>
-                  <ChipDirective text="Eşyasız" value="Eşyasız"></ChipDirective>
-                </ChipsDirective>
-              </ChipListComponent>
-            </div>
-          </section>
-          <section>
-            <div id="multichecbox" className='control-pane'>
-              <div className='control-section col-lg-8'>
-                <div id="multigroup" className="control-styles">
-                  <ButtonComponent onClick={this.search} cssClass='e-custom' id="btn">Ara</ButtonComponent>
+              </section>
+              <br></br>
+              <br></br>
+              <section>
+                <div className="d-flex justify-content-center">
+                  <ChipListComponent click={this.AdvertType.bind(this)} id="chip-choice" selection="Single" cssClass="e-outline">
+                    <ChipsDirective  >
+                      <ChipDirective text="Hepsi" value=""></ChipDirective>
+                      <ChipDirective text="Kiralık" value="Kiralık" ></ChipDirective>
+                      <ChipDirective text="Satılık" value="Satılık"></ChipDirective>
+                    </ChipsDirective>
+                  </ChipListComponent>
                 </div>
-              </div>
-            </div>
-          </section>
-        </section>
+              </section>
+              <br></br>
+              <section>
+                <div className="d-flex justify-content-center">
+                  <ChipListComponent click={this.AdvertOwnerType.bind(this)} id="chip-choice" selection="Single" cssClass="e-outline">
+                    <ChipsDirective  >
+                      <ChipDirective text="Hepsi" value=""></ChipDirective>
+                      <ChipDirective text="Sahibinden" value="Personal" ></ChipDirective>
+                      <ChipDirective text="Emlakçıdan" value="RealEstateAgent"></ChipDirective>
+                    </ChipsDirective>
+                  </ChipListComponent>
+                </div>
+              </section>
+              <br></br>
+              <section>
+                <div className="d-flex justify-content-center">
+                  <ChipListComponent click={this.FurnitureType.bind(this)} id="chip-choice" selection="Single" cssClass="e-outline">
+                    <ChipsDirective  >
+                      <ChipDirective text="Hepsi" value=""></ChipDirective>
+                      <ChipDirective text="Eşyalı" value="Eşyalı" ></ChipDirective>
+                      <ChipDirective text="Eşyasız" value="Boş"></ChipDirective>
+                    </ChipsDirective>
+                  </ChipListComponent>
+                </div>
+              </section>
+              <section>
+                <div id="multichecbox" className='control-pane'>
+                  <div className='control-section col-lg-8'>
+                    <div id="multigroup" className="control-styles">
+                      <ButtonComponent onClick={this.search} cssClass='e-custom' id="btn">Ara</ButtonComponent>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </section>
+          </div>
+        </div>
+        <div className="col-9">
+
+        {loading ? (
+          <div className="d-flex justify-content-center"><Loader
+          type="Audio"
+          color="#00BFFF"
+          height={100}
+          width={100}
+       
+  
+       /></div>
+         
+      ) : (
+        <div style={{ height: 'max-content', width: '100%' }}>
+        <Listings ListingsData={this.state.listings} />
+       
+        <section id='pagination'>
+      <div className='row'>
+        
+        <div className="d-flex flex-row py-4 align-items-center">
+          <Pagination totalRecords={totalCount} pageLimit={20} pageNeighbours={2} onPageChanged={this.onPageChanged} />
+        </div>
+      </div>
+    </section>
+        {/* <GoogleMapReact
+      bootstrapURLKeys={{ key:"AIzaSyCMKL0cff-7DDBGNkYdwhBPboMLwrRmi_s" }}
+      defaultCenter={ {
+        lat: 39.925533,
+        lng: 32.866287
+      }}
+      defaultZoom={6}
+      
+    >
+         <AnyReactComponent
+        lat={40.94886894055946}
+        lng={40.94886894055946}
+        text="My Marker"
+      />
+    </GoogleMapReact> */}
+      </div>
+      )}
+
+
+        </div>
       </div>
     )
   }

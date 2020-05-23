@@ -10,15 +10,56 @@ class Header extends Component {
     }
     this.loopListings = this.loopListings.bind(this)
   }
-  changeAscDesc(event, properties) {
-    const { value } = event.target
-    console.log("ascdec value when clicked", value)
-    console.log(properties.allProperties);
+ 
+loopListings(properties){
+  return properties.map((property, index) => {
+    return (
+      <div className='col-sm-12 col-md-6 col-lg-4 col-xl-3' key={index}>
+      <div className='listing'>
+        <div className='listing-img' style={{ background: `url("${property.image}") no-repeat center center` }}>
+          <span className='address'>{property.address}</span>
+          <div className='details'>
+            <div className='container'>
+              <div className='row'>
+                <div className='col-md-3'>
+                  <div className='user-img' />
+                </div>
+                <div className='col-md-9'>
+                  <div className='user-details'>
+                    <span className='user-name'>Jeffery Johnson </span>
+                    <span className='post-date'>05/05/2017</span>
+                  </div>
+                  <div className='listing-details'>
+                    <div className='floor-space'><i className='fa fa-square-o' aria-hidden='true' /> <span>{property.floorSpace} ft&sup2;</span></div>
+                    <div className='bedrooms'>
+                      <i className='fa fa-bed' aria-hidden='true' />
+                      <span>{property.rooms} bedrooms</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-    this.props.filterProperties(properties.allProperties, value)
-  }
-
-  loopListings(properties) {
+              {
+                property.owners.map((e) => (
+                 <div className='view-btn'>
+                 {e.ownerName}
+               </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+        <div className='bottom-info'>
+          <span className='price'>{property.price}</span>
+          <span className='location'><i className='fa fa-map-marker' aria-hidden='true' /> {property.city}, {property.state}</span>
+        </div>
+      </div>
+    </div>
+    )
+  })
+ 
+}
+  loopListingss(properties) {
     if (typeof properties.filteredProperties !== 'undefined' && properties.filteredProperties.length > 0) {
       return properties.filteredProperties.map((property, index) => {
         // This is the long box view
@@ -218,16 +259,9 @@ class Header extends Component {
 
 
   }
-  loopPages(pageNumber){
- console.log("listin",pageNumber)
-  }
-  goToUrl(url){
-    console.log(url)
-  }
- 
-
   render() {
-    const properties = this.props.properties
+    const properties = this.props.ListingsData
+    
    
     return (
       <section id='listings' className='col-sm-12 col-md-12 col-lg-12'>
@@ -254,31 +288,18 @@ class Header extends Component {
         <section className='listings-results'>
           <div className='container'>
             <div className='row'>
+            
               {this.loopListings(properties)}
             </div>
           </div>
         </section>
 
-        <section id='pagination'>
-          <div className='row'>
-            <ul className='pages'>
-              <li>Prev</li>
-              <li className='active'>1</li>
-              <li>2</li>
-              <li>3</li>
-              <li>4</li>
-              <li>5</li>
-              <li>Next</li>
-            </ul>
-          </div>
-        </section>
+    
       </section>
     )
   }
 }
 
-const mapStateToProps = (state) => ({
-  properties: state.properties,
-})
 
-export default connect(mapStateToProps, { loadProperties, filterProperties })(Header);
+
+export default Header;

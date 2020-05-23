@@ -20,9 +20,9 @@ class App extends Component {
         <Route path='/' component={props => <Header {...props} />} />
         <Route path='/' component={props => <MobileMenu {...props} />} />
         <Route exact path={['/', '/buy', '/sell', '/rent', '/estimate']} component={props => <FrontPage {...props} />} />
-
+        <Route exact path='/property' component={props => <SearchBar {...props} />} />
         {/* Property Search Routes */}
-        <div className="row">
+        {/* <div className="row">
         
         <div className="col-3" style={{ height: "max-content" }} >
           <Route exact path='/property' component={props => <SearchBar {...props} />} />
@@ -31,7 +31,7 @@ class App extends Component {
           <div className="col-9" >
           <Route exact path='/property' component={props => <MasterSearchContainer {...props} />} />
           </div>
-        </div>
+        </div> */}
       
     
       </div>
