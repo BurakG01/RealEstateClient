@@ -29,19 +29,21 @@ export default class Header extends Component {
             </span>
           </button>
           <nav className='left-nav'>
-            <a href='/property'>Buy</a>
+       
+            {/* <a href='/property'>Buy</a>
             <a href='/property'>Rent</a>
             <a href='/property'>Mortgages</a>
-            <a href='/property' className=''>Agent Finder</a>
+            <a href='/property' className=''>Agent Finder</a> */}
           </nav>
           <div className='logo'>
-            <a href='/'><img src={require('../../assets/images/trillio-house.png')} style={{ width: '50px', height: '40px' }} alt='' /><span>Trillio</span></a>
+            <a href='/'><img src={require('../../assets/images/trillio-house.png')} style={{ width: '50px', height: '40px' }} alt='' /><span></span></a>
           </div>
           <nav className='right-nav'>
-            <a href='/property' className='nav-item-removed'>List your rental</a>
+            
+            {/* <a href='/property' className='nav-item-removed'>List your rental</a>
             <a href='/property'>Advertise</a>
             <a href='/property'>Sign or Join</a>
-            <a href='/property' className='nav-item-removed'>Help</a>
+            <a href='/property' className='nav-item-removed'>Help</a> */}
           </nav>
         </header>
       </div>

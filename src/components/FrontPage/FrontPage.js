@@ -20,11 +20,11 @@ export default class LandingPage extends Component {
     return (
       <div className='front-page-wrapper'>
 
-        <Route exact path='/' component={props => <HeroDisplay {...props} />} />
-        <Route exact path='/buy' component={props => <HeroDisplayBuy {...props} />} />
+        <Route exact path='/' component={props => <HeroDisplayRent {...props} />} />
+        {/* <Route exact path='/buy' component={props => <HeroDisplayBuy {...props} />} />
         <Route exact path='/rent' component={props => <HeroDisplayRent {...props} />} />
         <Route exact path='/sell' component={props => <HeroDisplaySell {...props} />} />
-        <Route exact path='/estimate' component={props => <HeroDisplayEstimate {...props} />} />
+        <Route exact path='/estimate' component={props => <HeroDisplayEstimate {...props} />} /> */}
         <Footer />
       </div>
     )

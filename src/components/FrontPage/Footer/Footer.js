@@ -2,7 +2,7 @@ import React from 'react'
 
 const Footer = () => (
   <footer id='footer'>
-    <div className='footer-nav'>
+    {/* <div className='footer-nav'>
       <nav className='footer-row'>
         <ul className='footer-link-list'>
           <li><a href='/property' title='About' className=''>About</a></li>
@@ -42,7 +42,7 @@ const Footer = () => (
         <li>© 2006-2019 Trillio</li>
         <li><span className='zsg-icon-eho' /></li>
       </ul>
-    </div>
+    </div> */}
   </footer>
 )
 export default Footer

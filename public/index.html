@@ -7,6 +7,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta property="og:image" content="https://aarons-real-estate-application.herokuapp.com/aarons-real-estate-project-image.png">
     <meta property="og:image:secure_url" content="https://aarons-real-estate-application.herokuapp.com/aarons-real-estate-project-image.png">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
@@ -54,6 +55,11 @@
 #btn{
   width: inherit;
 }
+a.button:hover {
+    text-decoration: none;
+    color: white;
+}
+
 .marker {
     position: absolute;
     top: 50%;
@@ -67,6 +73,63 @@
     transform: translate(-50%, -50%);
   
   }
+  #listings,#pagination{
+    background-color: whitesmoke !important;
+  }
+  .stats{
+	border-top:1px solid #ebeff2;
+	background:#f7f8fa;
+	overflow:auto;
+	padding:15px 0;
+	font-size:16px;
+	color:#59687f;
+	font-weight:600;
+	border-radius: 0 0 5px 5px;
+}
+.stats div{
+	border-right:1px solid #ebeff2;
+	width: 33.33333%;
+	float:left;
+	text-align:center
+}
+.stats strong{
+	display:block;
+	color:#adb8c2;
+	font-size:11px;
+	font-weight:700;
+}
+.stats div:nth-of-type(3){border:none;}
+.dates{
+	border:1px solid #ebeff2;
+	border-radius:5px;
+	padding:20px 0px;
+	margin:10px 20px;
+	font-size:16px;
+	color:#5aadef;
+	font-weight:600;	
+	overflow:auto;
+}
+.dates div{
+	float:left;
+	width:50%;
+	text-align:center;
+	position:relative;
+}
+.dates strong,
+.stats strong{
+	display:block;
+	color:#adb8c2;
+	font-size:11px;
+	font-weight:700;
+}
+.dates span{
+	width:1px;
+	height:40px;
+	position:absolute;
+	right:0;
+	top:0;	
+	background:#ebeff2;
+}
     </style>
     <meta property="og:image:width" content="1600">
     <meta property="og:image:height" content="757">

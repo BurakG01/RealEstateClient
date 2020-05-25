@@ -21,9 +21,9 @@ export default class HeroDisplayRent extends Component {
 
           <div className='search-container'>
             <header className='home-page-header'>
-              <h1 className='heading'>Find your next rental</h1>
+              <h1 className='heading'>Aradığın Evi Bul</h1>
             </header>
-            <div className='home-page-tabs'>
+            {/* <div className='home-page-tabs'>
               <ul>
                 <li className=''>
                   <Link to='/buy'>
@@ -46,11 +46,11 @@ export default class HeroDisplayRent extends Component {
                   </Link>
                 </li>
               </ul>
-            </div>
+            </div> */}
             <HeroSearchBar />
           </div>
 
-          <div className='hero-footer'>
+          {/* <div className='hero-footer'>
             <div className='hero-footer-container'>
               <a className='upsell-main' href='/property'>
                 <img alt='Be ready to buy' className='icon' src='https://s.zillowstatic.com/homepage/static/upsell_list_a_rental.png' />
@@ -58,7 +58,7 @@ export default class HeroDisplayRent extends Component {
                 <span>Use our rent calculator to find out.</span>
               </a>
               <a href='/property' className='upsell-button zsg-button_primary'>Math made easy</a></div>
-          </div>
+          </div> */}
         </div>
       </div>
     )

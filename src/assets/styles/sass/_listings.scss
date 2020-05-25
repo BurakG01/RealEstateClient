@@ -112,11 +112,11 @@
           border-top-left-radius: 5px;
           border-top-right-radius: 5px;
           /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#9828cc+0,c489ff+98 */
-          background: rgb(152,40,204);
-          /* Old browsers */
-          background: -webkit-linear-gradient(-45deg, rgba(152,40,204,.8) 0%,rgba(196,137,255,.8) 98%);
-          /* Chrome10-25,Safari5.1-6 */
-          background: linear-gradient(135deg, rgba(152,40,204,.8) 0%,rgba(196,137,255,.8) 98%);
+          // background: rgb(152,40,204);
+          // /* Old browsers */
+          // background: -webkit-linear-gradient(-45deg, rgba(152,40,204,.8) 0%,rgba(196,137,255,.8) 98%);
+          // /* Chrome10-25,Safari5.1-6 */
+          // background: linear-gradient(135deg, rgba(152,40,204,.8) 0%,rgba(196,137,255,.8) 98%);
           /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
           .user-img {
             width: 35px;
@@ -155,36 +155,36 @@
       }
     }
 
-    .listing-details {
-      margin-top: 15px;
-      display: flex;
-      justify-content: flex-start;
-      align-items:center;
-      .fa {
-        display: inline-block;
-        font-size: 20px;
+    // .listing-details {
+    //   margin-top: 15px;
+    //   display: flex;
+    //   justify-content: flex-start;
+    //   align-items:center;
+    //   .fa {
+    //     display: inline-block;
+    //     font-size: 20px;
         
-      }
+    //   }
 
-      span {
-        display: inline-block;
-        font-size: 0.8rem;
+    //   span {
+    //     display: inline-block;
+    //     font-size: 0.8rem;
     
-      }
+    //   }
 
-      .floor-space {
-        display: flex;
-        flex-direction: row;
-        margin-right: 20px;
-      }
+    //   .floor-space {
+    //     display: flex;
+    //     flex-direction: row;
+    //     margin-right: 20px;
+    //   }
 
-      .bedrooms {
-        display: inline-block;
-        span{
-          margin-left: 10px;
-        }
-      }
-    }
+    //   .bedrooms {
+    //     display: inline-block;
+    //     span{
+    //       margin-left: 10px;
+    //     }
+    //   }
+    // }
 
     .bottom-info {
       padding: 20px 15px;
@@ -198,7 +198,7 @@
       }
 
       .location {
-        font-size: 1.2rem;
+        // font-size: 1.2rem;
         display: block;
         color: black;
       }
@@ -207,19 +207,20 @@
 }
 
 .view-btn {
-  background: black;
-  padding: 8px;
-  font-size: 0.9rem;
-  border-radius: 5px;
-  text-align: center;
-  max-width: 150px;
-  margin: 10px auto;
-  cursor: pointer;
-  transition: background 0.15s ease-in-out;
+  background:#5aadef !important;
+  color: white;
+  padding: 8px !important;
+  font-size: 0.9rem !important;
+  border-radius: 5px !important;
+  text-align: center !important;
+  max-width: 150px !important;
+  margin: 10px auto !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease-in-out !important;
 
-  &:hover {
-    background: $pink;
-  }
+  // &:hover {
+  //   background: $pink !important;
+  // }
 }
 
 #pagination {

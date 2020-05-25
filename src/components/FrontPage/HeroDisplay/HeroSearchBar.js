@@ -64,11 +64,11 @@ class HeroSearchBar extends Component {
           <div className='input-wrapper'>
             <input type='search' id="address-input" className='search-input' placeholder='Nerede Yaşamak İstersin?'
               onChange={this.handleChange} />
-            <div className='searchBtnContainer'>
+            {/* <div className='searchBtnContainer'>
               <button className='search-button' >
                 <span className='searchBtnText'>Search</span>
               </button>
-            </div>
+            </div> */}
           </div>
         </form>
       </React.Fragment>

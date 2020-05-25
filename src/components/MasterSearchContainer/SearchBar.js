@@ -84,27 +84,24 @@ class SearchBar extends Component {
   getListings = filter => {
    
     this.listingRepository.getPost(filter).then((res) => {
+      console.log(res.data.listings)
       let listings = [];
       res.data.listings.forEach(listing => {
+       
         listings.push({
 
           owners: listing.owners,
           ownerSite: listing.listing.ownerSite,
-          homeType: listing.listing.advertStatus,
+          advertStatus: listing.listing.advertStatus,
+          advertOwnerType:listing.listing.advertOwnerType=='RealEstateAgent'?'Emlakçı':'Sahibinden',
           address: listing.listing.street,
           price: listing.listing.price,
           city: listing.listing.city,
           state: listing.listing.town,
           rooms: listing.listing.roomNumber,
-          isForSale: true,
-          isForRent: true,
-          wasSold: false,
-          listingType: 'isForSale',
           image: listing.listing.coverImage,
-          extras: [
-            'elevator',
-            'gym'
-          ],
+          furnitureStatus: listing.listing.furnitureStatus=='Belirtilmemiş' ? '?' :listing.listing.furnitureStatus 
+         
         });
       });
       
@@ -240,9 +237,9 @@ class SearchBar extends Component {
        return (
       <div className="row">
 
-        <div className="col-3" style={{ height: "max-content" }} >
+        <div className="col-3" style={{ height: "max-content" }}  >
           <div className="container">
-            <section>
+            <section id="filtersection">
               <section>
                 <div className='control-pane'>
                   <div className='control-section col-lg-8'>
@@ -389,13 +386,15 @@ class SearchBar extends Component {
               </section>
             </section>
           </div>
+        
         </div>
         <div className="col-9">
 
         {loading ? (
-          <div className="d-flex justify-content-center"><Loader
-          type="Audio"
-          color="#00BFFF"
+          
+          <div className="d-flex justify-content-center" style={{marginTop :"150px"}}><Loader
+          type="Grid"
+          color="#6610f2"
           height={100}
           width={100}
        
