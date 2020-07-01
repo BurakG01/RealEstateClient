@@ -1,0 +1,9 @@
+{
+    "Algolia": {
+        "appId": "appId",
+      "apiKey": "appKey"
+    },
+    "Google":{
+        "apiKey": "appKey"
+    }
+}

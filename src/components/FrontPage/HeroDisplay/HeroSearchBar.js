@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom';
 import places from 'places.js'
+const config = require('../../../config.json')
 class HeroSearchBar extends Component {
 
   constructor(props) {
@@ -14,8 +15,8 @@ class HeroSearchBar extends Component {
   componentDidMount() {
 
     const fixedOptions = {
-      appId: 'plSF0E41V9AR',
-      apiKey: 'fc7783731fbd30b4564f631a78144825',
+      appId: config.Algolia.appId,
+      apiKey: config.Algolia.apiKey,
       container: document.querySelector('#address-input'),
 
     };

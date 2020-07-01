@@ -6,6 +6,7 @@ import RepositoryFactory from '../../Api/RepositoryFactory'
 import { enableRipple } from '@syncfusion/ej2-base';
 import Listings from './Listings.js'
 import GoogleMapReact from 'google-map-react';
+import MapContainer from './map'
 import Loader from 'react-loader-spinner'
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
 import { ButtonComponent, ChipDirective, ChipListComponent, ChipsDirective } from '@syncfusion/ej2-react-buttons';
@@ -35,9 +36,16 @@ class SearchBar extends Component {
       counties: [],
       cities: [
         { Name: 'Adana', Code: 'ada' },
-        { Name: 'Hatay', Code: 'hat' },
-        { Name: 'Mersin', Code: 'CM' },
-        { Name: 'Diyarbakır', Code: 'DK' }
+        { Name: 'Adıyaman', Code: 'DK' },
+        { Name: 'Afyon', Code: 'DK' },
+        { Name: 'Ağrı', Code: 'DK' },
+        { Name: 'Amasya', Code: 'DK' },
+        { Name: 'Ankara', Code: 'DK' },
+        { Name: 'Antalya', Code: 'DK' },
+        { Name: 'Artvin', Code: 'DK' },
+        { Name: 'Balıkesir', Code: 'hat' },
+        { Name: 'Bilecik', Code: 'CM' },
+        { Name: 'Bingöl', Code: 'DK' }
       ],
       ownerType: '',
       homeType: '',
@@ -136,6 +144,9 @@ class SearchBar extends Component {
     } else {
       towns.push(name);
       countiesCode.push(code);
+    }
+    if(towns.length==0){
+      this.setState({streetList:[]})
     }
 
     this.locationRepository.getPostNeighborhoods({ towns: this.state.countiesCode }).then((response) => {
@@ -404,7 +415,7 @@ class SearchBar extends Component {
       ) : (
         <div style={{ height: 'max-content', width: '100%' }}>
         <Listings ListingsData={this.state.listings} />
-       
+      
         <section id='pagination'>
       <div className='row'>
         

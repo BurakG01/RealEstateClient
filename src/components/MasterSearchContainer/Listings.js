@@ -44,30 +44,27 @@ class Header extends Component {
                     property.owners.map((e) => (
                       <a href={e.url} target="_blank" className="button" >
                         <div className='view-btn'>
-                          {property.ownerSite}
+                          {e.ownerName}
                         </div>
                       </a>
-
-
-
                     ))
                   }
                 </div>
               </div>
             </div>
             <div className='bottom-info'>
-            <div class="dates">
-                            <div class="start">
-                                <strong><i class="fa fa-try"></i></strong> {`${property.price}`}
+            <div className="dates">
+                            <div className="start">
+                                <strong><i className="fa fa-try"></i></strong> {`${property.price}`}
                                 <span></span>
                             </div>
-                            <div class="ends">
+                            <div className="ends">
                                 <strong><i className='fa fa-map-marker' aria-hidden='true' /></strong> {property.city}, {property.state}
                             </div>
                         </div>
               {/* <span className='price'>{`${property.price} TL`}</span>
               <span className='location'><i className='fa fa-map-marker' aria-hidden='true' /> {property.city}, {property.state}</span> */}
-              <div class="stats">
+              <div className="stats">
               <div>
                   <strong>Eşya</strong> {property.furnitureStatus}
                   </div>
@@ -323,8 +320,6 @@ class Header extends Component {
             </div>
           </div>
         </section>
-
-
       </section>
     )
   }
