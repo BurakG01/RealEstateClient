@@ -11,7 +11,7 @@
     "@syncfusion/ej2-react-dropdowns": "^18.1.48",
     "@syncfusion/ej2-react-inputs": "^18.1.45",
     "@syncfusion/ej2-react-navigations": "^18.1.46",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "font-awesome": "^4.7.0",
     "google-map-react": "^1.1.7",
     "google-maps-react": "^2.0.6",
